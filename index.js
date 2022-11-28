@@ -18,9 +18,6 @@ app.get("/", (req, res) => {
     res.send("welcome to mcloud-be")
 })
 
-// app.listen(port,()=>{
-//     console.log(`serve started on port: ${port}`);
-// })
 const server = http.createServer(app).listen(port, async () => {
     console.log(`Server started on port ${port}!`);
     console.log("Database connected . . .");
