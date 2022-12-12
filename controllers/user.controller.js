@@ -33,7 +33,7 @@ exports.addUser = async (req, res) => {
     user.password = await bcrypt.hash(user.password, salt);
     user.verificationToken = jwt.sign(
       {
-        firstName: user.names,
+        firstName: user.firstName,
         email: user.email,
       },
       process.env.TOKEN_SECRET,

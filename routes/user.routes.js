@@ -4,7 +4,7 @@ const { addUser,signIn,getUser,getUsers,editUser } = require("../controllers/use
 
 const userRouter=Router();
 
-userRouter.post("/",addUser);
+userRouter.post("/newuser",addUser);
 userRouter.post("/login",signIn);
 userRouter.patch("/modify/:uuid",editUser)
 userRouter.get("/",getUsers);
