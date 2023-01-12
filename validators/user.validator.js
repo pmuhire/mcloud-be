@@ -6,7 +6,8 @@ const validateUserRegisteration = (body) => {
     firstName: Joi.string().max(100).min(2).required(),
     lastName: Joi.string().max(100).min(2).required(),
     email: Joi.string().email().min(5).required(),
-    password: Joi.string().required()
+    password: Joi.string().required(),
+    profile_picture: Joi.string()
   });
   return validUserRegisterSchema.validate(body);
 };

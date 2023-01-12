@@ -1,6 +1,7 @@
 'use strict';
-
-const { Model } = require('sequelize');
+const {
+  Model
+} = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     /**
@@ -9,12 +10,7 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here. this is to satisfy all models are on required elements.
-      // define associtaion there or here.
-    }
-
-    toJSON() {
-      return { ...this.get(), id: undefined, password: undefined };
+      // define association here
     }
   }
   User.init({
@@ -39,6 +35,10 @@ module.exports = (sequelize, DataTypes) => {
     password:{
       type: DataTypes.STRING,
       allowNull: false
+    },
+    profile_picture:{
+      type: DataTypes.STRING,
+      allowNull: true
     }
   }, {
     sequelize,

@@ -3,10 +3,12 @@ const bcrypt = require("bcryptjs");
 const dotenv = require("dotenv");
 const jwt = require("jsonwebtoken");
 const { User } = require("../models");
+const cloudinary = require('cloudinary').v2;
 const {
   validateUserRegisteration,
   validateUserAuthenatication,
 } = require("../validators/user.validator");
+const fs = require('fs')
 
 dotenv.config();
 
@@ -19,7 +21,6 @@ exports.addUser = async (req, res) => {
     if (validateUserInput.error) {
       return res.status(400).json(validateUserInput.error.details[0].message);
     }
-
     const duplicateEmail = await User.findOne({ where: { email: user.email } });
     if (duplicateEmail) {
       return res.status(403).json({
@@ -41,16 +42,34 @@ exports.addUser = async (req, res) => {
     );
     // }, process.env.TOKEN_SECRET, { expiresIn: '365d' });
 
+    // UPLOAD PROFILE TO CLOUDINARY
+    const filePath = user.profile_picture;
+    console.log(filePath);
+    let fileUrl="";
+
+    cloudinary.config({
+      cloud_name: process.env.CLOUDNAME,
+      api_key: process.env.APIKEY,
+      api_secret: process.env.APISECRET
+    });
+    const randomNumber = Math.floor(Math.random() * 10000);
+    await cloudinary.uploader.upload(filePath,
+      { public_id: `MCLOUD/profile_picture/${user.lastName+user.firstName}${randomNumber}` },
+      function (error, result) { 
+          fileUrl=result.secure_url;
+       }
+    );
+    user.profile_picture=fileUrl;
+
     const newUser = await User.create(
       _.pick(user, [
         "firstName",
         "lastName",
         "email",
-        "password"
+        "password",
+        "profile_picture"
       ])
     );
-
-    // sendEmail(newUser.firstname, newUser.lastname, newUser.email);
 
     return res.status(201).json({
       success: true,
@@ -59,6 +78,7 @@ exports.addUser = async (req, res) => {
       data: newUser,
     });
   } catch (err) {
+    console.log(err);
     res.status(400).json({
       success: false,
       status: 400,
@@ -70,14 +90,14 @@ exports.addUser = async (req, res) => {
 exports.editUser = async (req, res) => {
   try {
     console.log(req.body);
-    const { firstName, lastName,password} =
+    const { firstName, lastName, password } =
       req.body;
     const id = req.params.uuid;
     await User.findOne({ where: { uuid: id } }).then(async (user) => {
       if (user) {
         await user
           .update(
-            { password, firstName,lastName},
+            { password, firstName, lastName, profile_picture },
             { where: { uuid: req.params.uuid } }
           )
           .then(() =>
@@ -114,6 +134,7 @@ exports.getUser = async (req, res) => {
 
 exports.signIn = async (req, res) => {
   try {
+    console.log(req.body);
     const validateUserInput = validateUserAuthenatication(req.body);
 
     if (validateUserInput.error) {
