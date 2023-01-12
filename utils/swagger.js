@@ -30,11 +30,6 @@ module.exports = {
       User: {
         type: "object", // data type
         properties: {
-        //   uuid: {
-        //     type: "string", 
-        //     description: "Identification number", 
-        //     example: "23ef672hshshbd", 
-        //   },
           firstName: {
             type: "string",
             description: "Users firstname",
@@ -55,6 +50,9 @@ module.exports = {
             description: "Users password",
             example: "encripted password", // example of a completed value
           },
+          profile_picture:{
+            
+          }
         },
       },
       // TOKEN

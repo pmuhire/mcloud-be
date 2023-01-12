@@ -44,8 +44,6 @@ exports.addUser = async (req, res) => {
 
     // UPLOAD PROFILE TO CLOUDINARY
     const filePath = user.profile_picture;
-    console.log(filePath);
-    let fileUrl="";
 
     cloudinary.config({
       cloud_name: process.env.CLOUDNAME,
@@ -54,12 +52,15 @@ exports.addUser = async (req, res) => {
     });
     const randomNumber = Math.floor(Math.random() * 10000);
     await cloudinary.uploader.upload(filePath,
-      { public_id: `MCLOUD/profile_picture/${user.lastName+user.firstName}${randomNumber}` },
+      { public_id: `MCLOUD/profile_picture/${user.lastName}/${user.lastName+user.firstName}${randomNumber}` },
       function (error, result) { 
-          fileUrl=result.secure_url;
+        if(!error){
+          user.profile_picture=result.secure_url;
+        }else{
+          console.log(error);
+        }
        }
     );
-    user.profile_picture=fileUrl;
 
     const newUser = await User.create(
       _.pick(user, [
